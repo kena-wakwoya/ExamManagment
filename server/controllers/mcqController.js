@@ -1,4 +1,5 @@
 const MCQ = require('../models/mcq');
+const Exam = require('../models/exam');
 const AppError = require('../errors/AppError');
 
 exports.createMCQ = async (req, res, next) => {
@@ -8,6 +9,8 @@ exports.createMCQ = async (req, res, next) => {
     }
 
     const mcq = await MCQ.create(req.body);
+    // Update the corresponding Exam's mcqs array
+    await Exam.findByIdAndUpdate(req.body.exam, { $push: { mcqs: mcq._id } });
     res.status(201).json(mcq);
   } catch (error) {
     next(error);
@@ -50,6 +53,10 @@ exports.updateMCQ = async (req, res, next) => {
 exports.deleteMCQ = async (req, res, next) => {
   try {
     const mcq = await MCQ.findByIdAndDelete(req.params.id);
+
+    //update Exams mcq []
+    await Exam.findByIdAndUpdate(mcq.exam, { $pull: { mcqs: req.params.id } });
+
     if (!mcq) {
       throw new AppError('MCQ not found', 404);
     }

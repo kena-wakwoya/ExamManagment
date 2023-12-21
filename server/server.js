@@ -5,7 +5,8 @@ const AppError = require('./errors/AppError');
 const cors = require('cors');
 // Load environment variables from .env
 require('dotenv').config();
-
+const PORT = process.env.PORT || 4040;
+console.log(PORT)
 const app = express();
 
 // Database connection
@@ -35,6 +36,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(4040, () => {
-  console.log(`Server is running on port 4040`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
